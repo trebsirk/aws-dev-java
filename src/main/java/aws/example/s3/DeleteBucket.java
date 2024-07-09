@@ -24,19 +24,8 @@ import com.amazonaws.services.s3.model.VersionListing;
  * well as any objects within it!
  */
 public class DeleteBucket {
-    public static void main(String[] args) {
-        final String USAGE = "\n" +
-                "To run this example, supply the name of an S3 bucket\n" +
-                "\n" +
-                "Ex: DeleteBucket <bucketname>\n";
 
-        if (args.length < 1) {
-            System.out.println(USAGE);
-            System.exit(1);
-        }
-
-        String bucket_name = args[0];
-
+    public static void deleteBucket(String bucket_name) {
         System.out.println("Deleting S3 bucket: " + bucket_name);
         final AmazonS3 s3 = AmazonS3ClientBuilder.standard().withRegion(Regions.DEFAULT_REGION).build();
         try {
@@ -81,5 +70,21 @@ public class DeleteBucket {
             System.exit(1);
         }
         System.out.println("Done!");
+    }
+
+    public static void main(String[] args) {
+        final String USAGE = "\n" +
+                "To run this example, supply the name of an S3 bucket\n" +
+                "\n" +
+                "Ex: DeleteBucket <bucketname>\n";
+
+        if (args.length < 1) {
+            System.out.println(USAGE);
+            System.exit(1);
+        }
+
+        String bucket_name = args[0];
+
+        deleteBucket(bucket_name);
     }
 }

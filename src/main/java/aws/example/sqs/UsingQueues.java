@@ -66,7 +66,7 @@ public class UsingQueues {
         sqs.createQueue("Queue2" + new Date().getTime());
         sqs.createQueue("MyQueue" + new Date().getTime());
         sqs.createQueue("testQueue" + new Date().getTime());
-            
+        
         List.of("Queue", "test", "MyQueue").forEach(
             name_prefix -> { 
                 ListQueuesResult lq_result_with_prefix = sqs.listQueues(new ListQueuesRequest(name_prefix));
