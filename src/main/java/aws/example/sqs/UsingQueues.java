@@ -10,10 +10,48 @@ import com.amazonaws.services.sqs.AmazonSQS;
 import com.amazonaws.services.sqs.AmazonSQSClientBuilder;
 import com.amazonaws.services.sqs.model.AmazonSQSException;
 import com.amazonaws.services.sqs.model.CreateQueueRequest;
+import com.amazonaws.services.sqs.model.CreateQueueResult;
 import com.amazonaws.services.sqs.model.ListQueuesRequest;
 import com.amazonaws.services.sqs.model.ListQueuesResult;
+import com.amazonaws.services.sqs.model.SendMessageRequest;
+import com.amazonaws.services.sqs.model.SendMessageResult;
 
 public class UsingQueues {
+
+    private AmazonSQS q;
+
+    public UsingQueues(AmazonSQS q) {
+        this.q = q;
+    }
+
+    public static CreateQueueResult create(String queueName, AmazonSQS q) {
+         CreateQueueRequest create_request = new CreateQueueRequest(queueName)
+            .addAttributesEntry("DelaySeconds", "60")
+            .addAttributesEntry("MessageRetentionPeriod", "86400");
+
+        try {
+            CreateQueueResult res = q.createQueue(create_request);
+            return res;
+        } catch (AmazonSQSException e) {
+            if (!e.getErrorCode().equals("QueueAlreadyExists")) {
+                throw e;
+            }
+        }
+        return null;
+    }
+
+    public static boolean send(String msg, String queueName, AmazonSQS q) {
+        try {
+            SendMessageRequest sendMessageRequest = new SendMessageRequest(queueName, msg)
+            .withSdkRequestTimeout(5000);
+            SendMessageResult res = q.sendMessage(sendMessageRequest);
+            return true;
+        } catch (Exception e) {
+            System.out.println(e);
+            return false;
+        }
+    }
+
     private static final String QUEUE_NAME = "testQueue" +
             new Date().getTime();
 
@@ -23,19 +61,8 @@ public class UsingQueues {
             .withRegion(Regions.US_EAST_1)
             .build();
         //defaultClient();
-
-        // Creating a Queue
-        CreateQueueRequest create_request = new CreateQueueRequest(QUEUE_NAME)
-                .addAttributesEntry("DelaySeconds", "60")
-                .addAttributesEntry("MessageRetentionPeriod", "86400");
-
-        try {
-            sqs.createQueue(create_request);
-        } catch (AmazonSQSException e) {
-            if (!e.getErrorCode().equals("QueueAlreadyExists")) {
-                throw e;
-            }
-        }
+        CreateQueueResult qres = create(QUEUE_NAME, sqs);
+       
 
         // Get the URL for a queue
         String queue_url = sqs.getQueueUrl(QUEUE_NAME).getQueueUrl();
