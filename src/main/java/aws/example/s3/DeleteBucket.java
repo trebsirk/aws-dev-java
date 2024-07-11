@@ -25,9 +25,11 @@ import com.amazonaws.services.s3.model.VersionListing;
  */
 public class DeleteBucket {
 
-    public static void deleteBucket(String bucket_name) {
+    public static void deleteBucket(String bucket_name, Regions r) {
+        if (r == null)
+            r = Regions.DEFAULT_REGION;
         System.out.println("Deleting S3 bucket: " + bucket_name);
-        final AmazonS3 s3 = AmazonS3ClientBuilder.standard().withRegion(Regions.DEFAULT_REGION).build();
+        final AmazonS3 s3 = AmazonS3ClientBuilder.standard().withRegion(r).build();
         try {
             System.out.println(" - removing objects from bucket");
             ObjectListing object_listing = s3.listObjects(bucket_name);
@@ -85,6 +87,6 @@ public class DeleteBucket {
 
         String bucket_name = args[0];
 
-        deleteBucket(bucket_name);
+        deleteBucket(bucket_name, Regions.DEFAULT_REGION);
     }
 }
