@@ -13,14 +13,16 @@ import com.amazonaws.services.sqs.model.CreateQueueRequest;
 import com.amazonaws.services.sqs.model.CreateQueueResult;
 import com.amazonaws.services.sqs.model.ListQueuesRequest;
 import com.amazonaws.services.sqs.model.ListQueuesResult;
+import com.amazonaws.services.sqs.model.Message;
+import com.amazonaws.services.sqs.model.ReceiveMessageResult;
 import com.amazonaws.services.sqs.model.SendMessageRequest;
 import com.amazonaws.services.sqs.model.SendMessageResult;
 
-public class UsingQueues {
+public class SQSService {
 
     private AmazonSQS q;
 
-    public UsingQueues(AmazonSQS q) {
+    public SQSService(AmazonSQS q) {
         this.q = q;
     }
 
@@ -50,6 +52,36 @@ public class UsingQueues {
             System.out.println(e);
             return false;
         }
+    }
+
+    public static void delete(String url, AmazonSQS sqs) {
+        try {
+            System.out.println("deleting "+url);
+            sqs.deleteQueue(url);
+            System.out.println(url+" deleted");
+        } catch (Exception e) {
+            System.out.println("error:" + url);
+            System.out.println(e);
+        }
+    }
+
+    public static List<Message> receive(String url, AmazonSQS sqs) {
+        List<Message> msgs = null;
+        try {
+            System.out.println("deleting "+url);
+            ReceiveMessageResult res = sqs.receiveMessage(url);
+            msgs = res.getMessages(); 
+            List<String> ms = msgs.stream().map(m -> m.getBody()).toList();//.collect(Collections.list)
+            ms.forEach(s -> {
+                System.out.println("found message"+s);
+            });
+            System.out.println(url+" deleted");
+            
+        } catch (Exception e) {
+            System.out.println("error:" + url);
+            System.out.println(e);
+        }
+        return msgs;
     }
 
     private static final String QUEUE_NAME = "testQueue" +

@@ -5,20 +5,23 @@ import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
 import java.time.Instant;
-import java.util.Date;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.model.Bucket;
 import com.amazonaws.services.s3.model.IllegalBucketNameException;
-import com.amazonaws.services.sqs.model.CreateQueueResult;
 
 import aws.example.s3.CreateBucket;
 import aws.example.s3.DeleteBucket;
-import aws.example.sqs.UsingQueues;
 
 public class TestS3 {
+
+    @Before
+    public void before() {
+        System.out.println("before...");
+    }
 
     @Test //(timeout=10000)
     public void testBucketCreateDelete() {
@@ -44,12 +47,5 @@ public class TestS3 {
         b = CreateBucket.getBucket(bucket_name, r);
         assertEquals(b, null);
         
-    }
-
-    @Test(expected = Exception.class)
-    public void testException() {
-        System.out.println("hello");
-        CreateQueueResult res = UsingQueues.create("testQueue"+(new Date().getTime()), null);
-
     }
 }
